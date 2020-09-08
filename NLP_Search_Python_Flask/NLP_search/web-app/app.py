@@ -8,6 +8,7 @@ from flask import jsonify
 from flask import Request
 from flask import Response
 import urllib3
+import re
 import json
 import pandas as pd 
 import numpy as np
@@ -28,6 +29,7 @@ lemmatizer = WordNetLemmatizer()
 app = Flask(__name__, instance_relative_config=False)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.secret_key = 'development key' #you will need a secret key
+
 
 if __name__ == "__main__":
   app.run(debug=True, host='0.0.0.0')
@@ -108,73 +110,80 @@ def predict():
     formPredict=DefectPrediction()
     if form.submit():
       SearchStr=form.num1.data
-      print(form.choices.data)
-      TOD=form.choices.data
+      
+        
+      
           
     k=0
+    if(not re.sub('[^A-Za-z0-9]+', '', SearchStr)):
+        output="Invalid Input"
+        
+    else:  
+      print("Anushree!!!")  
           
-    for a in df.index:
+      for a in df.index:
 
-        X=df['Desc'][a]
-        # tokenization 
-
-
-        X_list = word_tokenize(X.lower())  
-        Y_list = word_tokenize(SearchStr.lower()) 
+          X=df['Desc'][a]
+          # tokenization 
 
 
-      # Fetching all stop words
-        sw = stopwords.words('english')  
-        V1 =[];V2 =[] 
+          X_list = word_tokenize(X.lower())  
+          Y_list = word_tokenize(SearchStr.lower()) 
 
 
-        # Stop word removal 
-        X_set = {lemmatizer.lemmatize(w) for w in X_list if not w in sw}  
-        Y_set = {lemmatizer.lemmatize(w) for w in Y_list if not w in sw} 
+        # Fetching all stop words
+          sw = stopwords.words('english')  
+          V1 =[];V2 =[] 
 
 
-        UV = X_set.union(Y_set)  
-        for w in UV:
+          # Stop word removal 
+          X_set = {lemmatizer.lemmatize(w) for w in X_list if not w in sw}  
+          Y_set = {lemmatizer.lemmatize(w) for w in Y_list if not w in sw} 
 
 
-            if w in X_set: V1.append(1) 
+          UV = X_set.union(Y_set)  
+          for w in UV:
 
 
-            else: V1.append(0) 
-            if w in Y_set: V2.append(1) 
-            else: V2.append(0) 
-            c = 0
-       
-            
-
-            
-    # Calculating cosine similarity  
-        for i in range(len(UV)): 
+              if w in X_set: V1.append(1) 
 
 
-          c+= V1[i]*V2[i] 
-         
-        cosine = c / float((sum(V1)*sum(V2))**0.5) 
+              else: V1.append(0) 
+              if w in Y_set: V2.append(1) 
+              else: V2.append(0) 
+              c = 0
         
-        
-        Final.loc[Final['Defect Description']== X,'Similarity']=cosine
-        df_Final=Final.copy()
-        
+              
 
-          #sum=form.num1.data+form.num2.data
-        df_Final=Final[(Final['Similarity']>0)].sort_values(by='Similarity',ascending=False)
-        df_Final = df_Final.drop_duplicates(subset=['Defect Description'], keep='first')
-        df_Final = df_Final[['Release Name','Defect ID','Defect Description','RCA']].head(3)
-        #print(df_Final)
-        #df_Final=pd.DataFrame.to_html(df_Final,columns={'Similarity','Defect_desc'},index=False,classes='data')
-        #df_Final=pd.DataFrame.to_records(df_Final,index=False)
-        form.pd=df_Final
-        #display(HTML(form.abc))
-        #print(form.abc)
+              
+      # Calculating cosine similarity  
+          for i in range(len(UV)): 
+
+
+            c+= V1[i]*V2[i] 
+          
+          cosine = c / float((sum(V1)*sum(V2))**0.5) 
+          
+          
+          Final.loc[Final['Defect Description']== X,'Similarity']=cosine
+          df_Final=Final.copy()
+          
+
+            #sum=form.num1.data+form.num2.data
+          df_Final=Final[(Final['Similarity']>0)].sort_values(by='Similarity',ascending=False)
+          df_Final = df_Final.drop_duplicates(subset=['Defect Description'], keep='first')
+          df_Final = df_Final[['Release Name','Defect ID','Defect Description','RCA']].head(3)
+          #print(df_Final)
+          #df_Final=pd.DataFrame.to_html(df_Final,columns={'Similarity','Defect_desc'},index=False,classes='data')
+          #df_Final=pd.DataFrame.to_records(df_Final,index=False)
+          #form.pd=df_Final
+          output=df_Final.to_html(classes='data', header="true",index=False)
+          #display(HTML(form.abc))
+          #print(form.abc)
         
       
         
-    return render_template('index.html', form=form,formPredict=formPredict,tables=[df_Final.to_html(classes='data', header="true",index=False)])   
+    return render_template('index.html', form=form,formPredict=formPredict,tables=[output])   
 
 
        
