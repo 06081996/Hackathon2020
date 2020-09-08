@@ -1,0 +1,7 @@
+﻿Release,Functionality Name,Functionality Num,CP,Efforts (Days),Complexity Factor,# of Defects,Module complexity,Weighted DD,Average Severity,Total Business Impact,Final Hotspot
+31,Breach Details Send Email,162,39,43.68,0.6,5,0.66,0.125641026,1,1,
+31,RCM Management,217,10,150.08,1.2,5,1.5,0.057236843,2,2,
+31,Geography Popup - Mark up,154,11,101.76,0.6,3,3.67,0.03125,1,1,
+31,Geography Popup - Zoom in,261,22,29.7,1.5,2,0.87,0.090909091,3,3,
+31,Check Breach Issues,215,31,39.68,2.375,3,1.98,0.096774194,3,3,
+31,ROC Details Excel Export,202,1,5,0.2,1,0.87,0.01,1,0,
